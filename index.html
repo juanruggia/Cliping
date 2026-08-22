@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boletín Austral</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
+<style>
+  :root { --paper: #EEF1EC; --paper-raised: #FFFFFF; --ink: #172029; --ink-soft: #4C5A63; --ink-faint: #7C8991; --line: #D6DBD4; --accent-nac: #A5701F; --accent-prov: #7A4869; --accent-ush: #1C6E8C; --accent-rg: #A14E2A; --pulse: #C4432B; --font-display: "Fraunces", Georgia, "Times New Roman", serif; --font-body: "Work Sans", -apple-system, "Segoe UI", sans-serif; --font-mono: "IBM Plex Mono", "Consolas", monospace; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper: #12181C; --paper-raised: #1A2226; --ink: #E7E9E2; --ink-soft: #ABB5AC; --ink-faint: #75827A; --line: #2C3639; --accent-nac: #E0AA57; --accent-prov: #C08CB0; --accent-ush: #6FBAD4; --accent-rg: #E08A5C; --pulse: #E27259; } }
+  :root[data-theme="dark"] { --paper: #12181C; --paper-raised: #1A2226; --ink: #E7E9E2; --ink-soft: #ABB5AC; --ink-faint: #75827A; --line: #2C3639; --accent-nac: #E0AA57; --accent-prov: #C08CB0; --accent-ush: #6FBAD4; --accent-rg: #E08A5C; --pulse: #E27259; }
+  * { box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--font-body); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+  header.masthead { border-bottom: 2px solid var(--ink); padding-bottom: 1.1rem; margin-bottom: 1.4rem; }
+  .kicker { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
+  .kicker .live { color: var(--pulse); display: inline-flex; align-items: center; gap: 0.4em; }
+  .kicker .live .dot { width: 0.5em; height: 0.5em; border-radius: 50%; background: var(--pulse); display: inline-block; animation: dot-glow 1.8s ease-in-out infinite; }
+  @keyframes dot-glow { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(196,67,43,.5); } 50% { opacity: 0.45; box-shadow: 0 0 6px 2px rgba(196,67,43,.5); } }
+  @media (prefers-reduced-motion: reduce) { .kicker .live .dot { animation: none; } }
+  .kicker .countdown { font-variant-numeric: tabular-nums; }
+  .refresh-btn { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line); border-radius: 3px; padding: 0.2rem 0.55rem; cursor: pointer; }
+  .refresh-btn:hover { border-color: var(--ink); }
+  .refresh-btn:active { transform: translateY(1px); }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(2rem, 5vw, 2.8rem); margin: 0 0 0.3rem; text-wrap: balance; letter-spacing: -0.01em; }
+  .subhead { color: var(--ink-soft); font-size: 0.98rem; max-width: 68ch; margin: 0; }
+  .resumen { background: var(--paper-raised); border-left: 3px solid var(--ink); padding: 1rem 1.3rem; margin: 0 0 2rem; border-radius: 0 3px 3px 0; }
+  .resumen h3 { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; color: var(--ink-faint); margin: 0 0 0.6rem; }
+  .resumen p { font-size: 0.95rem; line-height: 1.65; color: var(--ink); max-width: 78ch; margin: 0; }
+  .insights { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2rem; margin: 0 0 2.4rem; padding-bottom: 1.8rem; border-bottom: 1px solid var(--line); }
+  @media (max-width: 640px) { .insights { grid-template-columns: 1fr; } }
+  .insights h3 { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; color: var(--ink-faint); margin: 0 0 0.8rem; }
+  .bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .bars li { display: grid; grid-template-columns: 11rem 1fr 1.6rem; align-items: center; gap: 0.6rem; }
+  .bars .label { font-size: 0.82rem; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bars .track { background: var(--line); border-radius: 2px; height: 0.5rem; overflow: hidden; }
+  .bars .track i { display: block; height: 100%; background: var(--ink-soft); border-radius: 2px; }
+  .bars .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+  .stack-bar { display: flex; height: 0.7rem; border-radius: 3px; overflow: hidden; margin-bottom: 0.7rem; }
+  .stack-bar i.nac { background: var(--accent-nac); } .stack-bar i.prov { background: var(--accent-prov); } .stack-bar i.ush { background: var(--accent-ush); } .stack-bar i.rg { background: var(--accent-rg); }
+  .stack-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); } .stack-legend span { display: flex; align-items: center; gap: 0.4rem; } .stack-legend .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; display: inline-block; } .stack-legend .dot.nac { background: var(--accent-nac); } .stack-legend .dot.prov { background: var(--accent-prov); } .stack-legend .dot.ush { background: var(--accent-ush); } .stack-legend .dot.rg { background: var(--accent-rg); } .stack-legend strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+  main { display: flex; flex-direction: column; gap: 2.6rem; }
+  section h2 { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem; margin: 0 0 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 0.5rem; }
+  .swatch { width: 0.6rem; height: 0.6rem; border-radius: 50%; display: inline-block; }
+  .nacional h2, .nacional .swatch { color: var(--accent-nac); } .nacional .swatch { background: var(--accent-nac); }
+  .provincial h2, .provincial .swatch { color: var(--accent-prov); } .provincial .swatch { background: var(--accent-prov); }
+  .ushuaia h2, .ushuaia .swatch { color: var(--accent-ush); } .ushuaia .swatch { background: var(--accent-ush); }
+  .riogrande h2, .riogrande .swatch { color: var(--accent-rg); } .riogrande .swatch { background: var(--accent-rg); }
+  .nacional .stories { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .locales { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; }
+  @media (max-width: 900px) { .locales { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .nacional .stories { grid-template-columns: 1fr; } .locales { grid-template-columns: 1fr; } }
+  article.story { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 3px; padding: 1.1rem 1.2rem 1.2rem; margin-bottom: 0.9rem; }
+  article.story .tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); display: flex; justify-content: space-between; margin-bottom: 0.45rem; }
+  .nacional article.story .tag .cat { color: var(--accent-nac); } .provincial article.story .tag .cat { color: var(--accent-prov); } .ushuaia article.story .tag .cat { color: var(--accent-ush); } .riogrande article.story .tag .cat { color: var(--accent-rg); }
+  .day-divider { grid-column: 1 / -1; display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 0.3rem 0 0.2rem; }
+  .day-divider::before, .day-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  article.story h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; line-height: 1.28; margin: 0 0 0.4rem; text-wrap: balance; }
+  article.story p { font-size: 0.9rem; line-height: 1.5; color: var(--ink-soft); margin: 0 0 0.6rem; }
+  article.story a.src { font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink-faint); padding-bottom: 1px; } article.story a.src:hover { border-color: var(--ink); }
+  footer { margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="kicker"><span>Clipping de medios · solo política</span><span class="live"><span class="dot"></span>actualizado 22/08/2026 · 15:34 ART · <span class="countdown" id="countdown">próxima en --:--:--</span> <button class="refresh-btn" id="refresh-btn" type="button" onclick="location.reload()">↻ Actualizar</button></span></div>
+    <h1>Boletín Austral</h1>
+    <p class="subhead">Nación, Tierra del Fuego, Ushuaia y Río Grande: sólo política — Congreso, gobierno, partidos y elecciones. Con enlace a la fuente original de cada nota.</p>
+  </header>
+
+  <div class="resumen">
+    <h3>Resumen</h3>
+    <p>A nivel nacional, Milei retomó la agenda legislativa tras su gira por Ecuador y Colombia y confirmó para el 26 de agosto la sesión de Diputados que tratará la reforma del BCRA y la Ley de Inocencia Fiscal II con el aval de todos sus aliados, mientras completa más de tres semanas sin pisar la Casa Rosada y despacha desde la Quinta de Olivos con Karina Milei a cargo de la coordinación política en Balcarce 50. La detención en Bolivia de Fernando Cerimedo, exasesor de comunicación de Milei, tuvo repercusión política. Kicillof avanza en su proyección a 2027 con el lanzamiento de las Juventudes de su espacio, en medio de tensiones con Máximo Kirchner, que insiste en la candidatura de Cristina Kirchner, y acercamientos con Massa. El diputado fueguino Araujo reclamó informes por el traspaso de áreas hidrocarburíferas de YPF. A nivel provincial, la sucesión de Melella en la gobernación 2027 divide al oficialismo entre Vuoto y Pérez, mientras en Tolhuin se debate la re-reelección de Harrington dentro del armado de Provincia Grande. En Ushuaia, Furlán y Ventura confirmaron candidaturas frente a Vuoto y una encuesta radial midió a posibles sucesores en la intendencia. En Río Grande no hubo novedades.</p>
+  </div>
+
+  <div class="insights" style="grid-template-columns: 1fr 1fr 1fr">
+    <div class="ranking">
+      <h3>Más mencionado</h3>
+      <ol class="bars">
+        <li><span class="label">Milei / LLA</span><span class="track"><i style="width:100%"></i></span><span class="count">9</span></li>
+        <li><span class="label">Congreso Nacional</span><span class="track"><i style="width:89%"></i></span><span class="count">8</span></li>
+        <li><span class="label">Gobernación TDF 2027</span><span class="track"><i style="width:89%"></i></span><span class="count">8</span></li>
+        <li><span class="label">Vuoto (Ushuaia)</span><span class="track"><i style="width:67%"></i></span><span class="count">6</span></li>
+        <li><span class="label">Kicillof</span><span class="track"><i style="width:56%"></i></span><span class="count">5</span></li>
+        <li><span class="label">Martín Pérez / Pcia. Grande</span><span class="track"><i style="width:44%"></i></span><span class="count">4</span></li>
+      </ol>
+    </div>
+    <div class="distribucion">
+      <h3>Notas por nivel</h3>
+      <div class="stack-bar">
+        <i class="nac" style="width:59%"></i><i class="prov" style="width:22%"></i><i class="ush" style="width:13%"></i><i class="rg" style="width:6%"></i>
+      </div>
+      <div class="stack-legend">
+        <span><i class="dot nac"></i>Nación <strong>19</strong></span>
+        <span><i class="dot prov"></i>Provincia <strong>7</strong></span>
+        <span><i class="dot ush"></i>Ushuaia <strong>4</strong></span>
+        <span><i class="dot rg"></i>Río Grande <strong>2</strong></span>
+      </div>
+    </div>
+    <div class="actividad">
+      <h3>Actividad por día</h3>
+      <ol class="bars">
+        <li><span class="label">16/08</span><span class="track"><i style="width:0%"></i></span><span class="count">0</span></li>
+        <li><span class="label">17/08</span><span class="track"><i style="width:0%"></i></span><span class="count">0</span></li>
+        <li><span class="label">18/08</span><span class="track"><i style="width:100%"></i></span><span class="count">4</span></li>
+        <li><span class="label">19/08</span><span class="track"><i style="width:25%"></i></span><span class="count">1</span></li>
+        <li><span class="label">20/08</span><span class="track"><i style="width:75%"></i></span><span class="count">3</span></li>
+        <li><span class="label">21/08</span><span class="track"><i style="width:75%"></i></span><span class="count">3</span></li>
+        <li><span class="label">22/08</span><span class="track"><i style="width:75%"></i></span><span class="count">3</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <main>
+    <section class="nacional">
+      <h2><span class="swatch"></span>Nación — Congreso, Milei/LLA, CFK/Máximo/Massa/Kicillof</h2>
+      <div class="stories">
+
+        <div class="day-divider">22 DE AGOSTO</div>
+
+        <article class="story" data-tema="Milei / LLA">
+          <div class="tag"><span class="cat">Presidencia</span><span>18-21/08</span></div>
+          <h3>Milei completa un mes sin pisar la Casa Rosada y despacha desde la Quinta de Olivos</h3>
+          <p>El Presidente no ingresó a Balcarce 50 desde el 31 de julio y concentra su agenda oficial en la residencia presidencial, mientras Karina Milei queda a cargo de la coordinación política en la sede de gobierno.</p>
+          <a class="src" href="https://www.pagina12.com.ar/2026/08/18/javier-milei-sigue-sin-pisar-la-casa-rosada/" target="_blank" rel="noopener">Página/12 ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA, Congreso Nacional">
+          <div class="tag"><span class="cat">Presidencia</span><span>22/08</span></div>
+          <h3>Milei volvió de su gira por Ecuador y Colombia y convocó a la mesa política</h3>
+          <p>El Presidente retomó la agenda legislativa junto a Karina Milei, Santilli y Santiago Caputo para ordenar la negociación en el Congreso antes de la sesión del 26 de agosto, con eje en el BCRA y la ley de Inocencia Fiscal.</p>
+          <a class="src" href="https://www.a24.com/politica/milei-concentra-su-agenda-la-economia-mientras-karina-milei-ordena-la-mesa-politica-n1588117" target="_blank" rel="noopener">A24 ↗</a>
+        </article>
+
+        <article class="story" data-tema="Congreso Nacional, Milei / LLA">
+          <div class="tag"><span class="cat">Congreso</span><span>22/08</span></div>
+          <h3>El Gobierno negocia con los gobernadores de cara al Presupuesto 2027 y al debate por las PASO</h3>
+          <p>La Casa Rosada reacciona al realineamiento de las provincias en el Congreso y hace gestos de amplitud, en momentos en que se prepara la negociación presupuestaria y crece la discusión por eliminar las primarias antes de 2027.</p>
+          <a class="src" href="https://www.infobae.com/politica/2026/08/22/el-gobierno-reacciona-al-realineamiento-de-las-provincias-en-el-congreso-y-hace-gestos-de-amplitud/" target="_blank" rel="noopener">Infobae ↗</a>
+        </article>
+
+        <article class="story" data-tema="Kicillof">
+          <div class="tag"><span class="cat">MDF</span><span>22/08</span></div>
+          <h3>Kicillof lanzó las Juventudes de su espacio político en San Martín</h3>
+          <p>El gobernador bonaerense encabezó el lanzamiento de MDF Juventudes, la rama joven de su armado, con la mira puesta en ampliar su proyección hacia las elecciones de 2027.</p>
+          <a class="src" href="https://www.eleco.com.ar/nacionales/kicillof-lanza-el-mdf-juventudes-apuntando-a-las-elecciones-2027" target="_blank" rel="noopener">El Eco ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA">
+          <div class="tag"><span class="cat">Presidencia</span><span>21/08</span></div>
+          <h3>Milei ratificó su modelo económico en el Council of the Americas y viajó a Rosario</h3>
+          <p>El Presidente defendió su gestión y prometió cumplir el objetivo de bajar la inflación; luego encabezó el acto por el aniversario de la Bolsa de Comercio de Rosario ante el sector agroexportador.</p>
+          <a class="src" href="https://www.perfil.com/noticias/politica/milei-ante-el-sector-agroexportador-el-presidente-llega-a-rosario-tras-sus-polemicas-declaraciones-en-el-council-of-the-americas.phtml" target="_blank" rel="noopener">Perfil ↗</a>
+        </article>
+
+        <article class="story" data-tema="Congreso Nacional, Milei / LLA">
+          <div class="tag"><span class="cat">Diputados</span><span>21/08</span></div>
+          <h3>Diputados confirmó la sesión del 26 de agosto con el aval de todos los bloques aliados</h3>
+          <p>El oficialismo sumó el respaldo de sus socios parlamentarios y de cinco provincias para tratar en el recinto la reforma de la Carta Orgánica del BCRA y el proyecto de Inocencia Fiscal II, dentro de un temario de 16 puntos.</p>
+          <a class="src" href="https://www.parlamentario.com/2026/08/21/reforma-bcra-e-inocencia-fiscal-ii-lla-va-al-recinto-con-aval-de-todos-los-aliados/" target="_blank" rel="noopener">Parlamentario ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA">
+          <div class="tag"><span class="cat">Presidencia</span><span>18-21/08</span></div>
+          <h3>Detuvieron en Bolivia a Fernando Cerimedo, exasesor de comunicación de Milei</h3>
+          <p>El fundador de La Derecha Diario, que participó de la campaña presidencial de 2023, fue interceptado en el aeropuerto de Santa Cruz de la Sierra e imputado por un ataque a balazos contra su expareja; el caso tuvo repercusión política en el oficialismo.</p>
+          <a class="src" href="https://www.lanacion.com.ar/politica/detuvieron-a-fernando-cerimedo-en-bolivia-lo-investigan-por-un-ataque-a-balazos-a-su-expareja-nid18082026/" target="_blank" rel="noopener">La Nación ↗</a>
+        </article>
+
+        <div class="day-divider">20 DE AGOSTO</div>
+
+        <article class="story" data-tema="Kicillof">
+          <div class="tag"><span class="cat">PJ Bonaerense</span><span>20/08</span></div>
+          <h3>Kicillof acelera su armado nacional con actividades en La Plata y una cumbre en Uruguay</h3>
+          <p>El gobernador reunió a dirigentes peronistas de todo el país bajo la consigna "Peronismo para peronistas" y viaja a Montevideo para una cumbre progresista, en medio de su proyección hacia 2027.</p>
+          <a class="src" href="https://www.lanacion.com.ar/politica/axel-kicillof-intensifica-su-armado-nacional-tras-la-cumbre-del-pj-con-maximo-kirchner-y-sergio-nid17082026/" target="_blank" rel="noopener">La Nación ↗</a>
+        </article>
+
+        <article class="story" data-tema="Congreso Nacional">
+          <div class="tag"><span class="cat">Diputados</span><span>sesión 26/08</span></div>
+          <h3>LLA busca convertir en ley "Inocencia Fiscal II"</h3>
+          <p>El oficialismo logró dictamen de mayoría con 44 firmas en Presupuesto y Hacienda y Legislación Penal; se debate en la sesión del 26 de agosto.</p>
+          <a class="src" href="https://www.diariopanorama.com/noticia/563393/libertad-avanza-prepara-sesion-clave-diputados-para-avanzar-agenda-milei" target="_blank" rel="noopener">Diario Panorama ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA">
+          <div class="tag"><span class="cat">LLA</span><span>en curso</span></div>
+          <h3>Karina Milei ordena el armado territorial de LLA para 2027</h3>
+          <p>Recorre CABA con ministros como Toto Caputo y abre la puerta a un acuerdo electoral con el PRO, con la Provincia de Buenos Aires como prioridad.</p>
+          <a class="src" href="https://www.infobae.com/politica/2026/08/19/la-libertad-avanza-sigue-recorriendo-caba-karina-milei-encabezo-una-visita-a-una-tradicional-empresa-portena/" target="_blank" rel="noopener">Infobae ↗</a>
+        </article>
+
+        <div class="day-divider">19 DE AGOSTO</div>
+
+        <article class="story" data-tema="Massa">
+          <div class="tag"><span class="cat">Frente Renovador</span><span>19/08</span></div>
+          <h3>El diputado Guillermo Michel dejó abierta una candidatura presidencial de Massa en 2027</h3>
+          <p>El legislador del Frente Renovador afirmó que la decisión "es exclusivamente personal" de Sergio Massa, en medio de su reacomodamiento político de cara al año próximo.</p>
+          <a class="src" href="https://www.analisisdigital.com.ar/provinciales/2026/08/19/el-diputado-guillermo-michel-hablo-de-una-posible-candidatura-presidencial-de-massa-en-2027" target="_blank" rel="noopener">Análisis Digital ↗</a>
+        </article>
+
+        <div class="day-divider">18 DE AGOSTO</div>
+
+        <article class="story" data-tema="Congreso Nacional, TDF Nacional">
+          <div class="tag"><span class="cat">Diputados + TDF</span><span>18/08</span></div>
+          <h3>El diputado fueguino Araujo pidió informes por el traspaso de áreas hidrocarburíferas de YPF</h3>
+          <p>El legislador por Tierra del Fuego presentó un proyecto para que la Secretaría de Energía explique el traspaso de las áreas Lago Fuego y Los Chorrillos de YPF a Terra Ignis Energía SA.</p>
+          <a class="src" href="https://www.parlamentario.com/2026/08/18/exigen-informes-al-gobierno-por-el-traspaso-de-areas-hidrocarburiferas-en-tierra-del-fuego/" target="_blank" rel="noopener">Parlamentario ↗</a>
+        </article>
+
+        <article class="story" data-tema="CFK / La Cámpora">
+          <div class="tag"><span class="cat">La Cámpora</span><span>04/08</span></div>
+          <h3>Máximo Kirchner pide que CFK sea candidata en 2027</h3>
+          <p>Asume un rol de delegado nacional de Cristina Kirchner y empieza a recorrer el país; marca que La Cámpora no acepta sin resistencia el liderazgo de Kicillof.</p>
+          <a class="src" href="https://www.infobae.com/politica/2026/08/04/maximo-kirchner-lanza-un-perfil-nacional-recorrera-el-pais-como-delegado-de-cfk-y-asumira-un-rol-electoral/" target="_blank" rel="noopener">Infobae ↗</a>
+        </article>
+
+        <article class="story" data-tema="Kicillof, Massa, CFK / La Cámpora">
+          <div class="tag"><span class="cat">PJ</span><span>13/08</span></div>
+          <h3>Cónclave peronista: Kicillof, Massa y Máximo Kirchner por las PASO</h3>
+          <p>Se reunieron con gobernadores para blindar las primarias frente a la intención oficialista de suspenderlas o eliminarlas de cara a 2027.</p>
+          <a class="src" href="https://www.pagina12.com.ar/2026/08/13/conclave-peronista-maximo-kirchner-sergio-massa-y-axel-kicillof-se-reunieron-para-blindar-las-paso/" target="_blank" rel="noopener">Página/12 ↗</a>
+        </article>
+
+        <article class="story" data-tema="CFK / La Cámpora">
+          <div class="tag"><span class="cat">Cruce</span><span>21/08</span></div>
+          <h3>Bullrich: café con Cristina Kirchner sí, con Máximo no</h3>
+          <p>La ministra marcó distancia con La Cámpora mientras deja una puerta abierta a un gesto distendido hacia la expresidenta.</p>
+          <a class="src" href="https://prensamercosur.org/2026/08/21/argentina-patricia-bullrich-dijo-que-tomaria-un-cafe-con-cristina-kirchner-pero-no-con-maximo/" target="_blank" rel="noopener">Prensa Mercosur ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA, Kicillof">
+          <div class="tag"><span class="cat">LLA Bonaerense</span><span>10/08</span></div>
+          <h3>Karina Milei encabezó un cónclave con legisladores bonaerenses de LLA tras la derrota en el Senado</h3>
+          <p>La secretaria general de la Presidencia definió con senadores y diputados provinciales la estrategia legislativa y electoral del espacio en Buenos Aires, con eje en la campaña contra Axel Kicillof de cara a 2027.</p>
+          <a class="src" href="https://www.infobae.com/politica/2026/08/10/karina-milei-reunio-a-los-legisladores-bonaerenses-e-inauguro-la-campana-electoral-contra-kicillof/" target="_blank" rel="noopener">Infobae ↗</a>
+        </article>
+
+        <article class="story" data-tema="Milei / LLA, Congreso Nacional">
+          <div class="tag"><span class="cat">Senado</span><span>06-09/08</span></div>
+          <h3>El Senado rechazó un capítulo clave de la Ley de Tierras y el Gobierno quedó aislado de gobernadores aliados</h3>
+          <p>El oficialismo debió retirar el capítulo de inviolabilidad de la propiedad privada ante el rechazo de bloques provinciales que hasta entonces lo acompañaban, en una de las derrotas legislativas más duras del año para la Casa Rosada.</p>
+          <a class="src" href="https://www.minutouno.com/politica/derrota-del-gobierno-javier-milei-el-oficialismo-dio-baja-la-ley-tierras-el-senado-n6307471" target="_blank" rel="noopener">Minuto Uno ↗</a>
+        </article>
+
+        <article class="story" data-tema="Congreso Nacional, TDF Nacional">
+          <div class="tag"><span class="cat">Senado + TDF</span><span>07-08/08</span></div>
+          <h3>Senadores nacionales de varias provincias recorrieron Tierra del Fuego</h3>
+          <p>Di Tullio, Alicia Kirchner, Gadano, Linares y Salino acompañaron a la senadora fueguina Cristina López en actividades políticas e institucionales.</p>
+          <a class="src" href="https://www.surenio.com.ar/senadoras-y-senadores-nacionales-recorrieron-tierra-del-fuego-junto-a-cristina-lopez/" target="_blank" rel="noopener">El Sureño ↗</a>
+        </article>
+
+        <article class="story" data-tema="Congreso Nacional, TDF Nacional">
+          <div class="tag"><span class="cat">Diputados + TDF</span><span>14/08</span></div>
+          <h3>El diputado nacional Araujo aclaró que no acompaña la reforma de la Carta Orgánica del BCRA</h3>
+          <p>El legislador por Tierra del Fuego corrigió versiones previas que lo daban como apoyo del oficialismo en el proyecto.</p>
+          <a class="src" href="https://www.surenio.com.ar/el-diputado-araujo-no-apoya-la-reforma-de-la-carta-organica-del-bcra/" target="_blank" rel="noopener">El Sureño ↗</a>
+        </article>
+
+      </div>
+    </section>
+
+    <div class="locales">
+      <section class="provincial">
+        <h2><span class="swatch"></span>Provincia — electoral y partidaria</h2>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Martín Pérez / Pcia. Grande">
+          <div class="tag"><span class="cat">Tolhuin</span><span>reciente</span></div>
+          <h3>Tierra del Fuego adelanta los tiempos electorales y en Tolhuin se discute la re-reelección de Harrington</h3>
+          <p>El intendente de Tolhuin no despeja si buscará un nuevo mandato en 2027, mientras confirmó que su espacio competirá dentro del armado de Provincia Grande que lidera el intendente de Río Grande, Martín Pérez.</p>
+          <a class="src" href="https://www.letrap.com.ar/politica/tierra-del-fuego-se-adelantan-los-tiempos-electorales-y-tolhuin-discute-la-re-re-harrington-n5425662" target="_blank" rel="noopener">LeTrap ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Vuoto (Ushuaia)">
+          <div class="tag"><span class="cat">Coparticipación</span><span>reciente</span></div>
+          <h3>La coparticipación reabrió la pelea entre Melella y Vuoto</h3>
+          <p>Un nuevo cruce por el envío de fondos coparticipables a los municipios volvió a tensar la relación entre el gobernador y el intendente de Ushuaia, en medio de la interna por la sucesión 2027.</p>
+          <a class="src" href="https://www.letrap.com.ar/politica/la-coparticipacion-tierra-del-fuego-abre-un-nuevo-round-la-pelea-gustavo-melella-y-walter-vuoto-n5423005" target="_blank" rel="noopener">LeTrap ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Vuoto (Ushuaia)">
+          <div class="tag"><span class="cat">PJ</span><span>20/08</span></div>
+          <h3>El legislador Pino propuso a Vuoto como candidato del PJ a la gobernación</h3>
+          <p>Destacó la gestión municipal de Vuoto en Ushuaia y pidió ampliar el espacio peronista de cara a 2027.</p>
+          <a class="src" href="https://www.ushuaianoticias.com/2026/08/20/pino-respaldo-y-propuso-a-vuoto-para-la-gobernacion/" target="_blank" rel="noopener">Ushuaia Noticias ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027">
+          <div class="tag"><span class="cat">2027</span><span>18/08</span></div>
+          <h3>Gustavo Ventura encabezó un encuentro provincial y avanza en la construcción de una alternativa para 2027</h3>
+          <p>El referente del PAR reunió a más de 250 personas de Ushuaia, Río Grande y Tolhuin para presentar avances de un plan de gobierno con autonomía de las estructuras nacionales, de cara a competir en todos los niveles el año próximo.</p>
+          <a class="src" href="https://www.radiouniversidad.com.ar/ventura-encabezo-el-encuentro-tierra-del-fuego-2027-y-afirmo-que-construyen-una-alternativa-provincial/" target="_blank" rel="noopener">Radio Universidad ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Martín Pérez / Pcia. Grande">
+          <div class="tag"><span class="cat">2027</span><span>reciente</span></div>
+          <h3>Provincia Grande confirmó que competirá en toda Tierra del Fuego en 2027</h3>
+          <p>Martín Pérez evalúa ir solo o en alianza; la decisión se define en los próximos meses.</p>
+          <a class="src" href="https://www.radiouniversidad.com.ar/martin-perez-confirmo-que-provincia-grande-sera-alternativa-en-toda-tierra-del-fuego-en-2027/" target="_blank" rel="noopener">Radio Universidad ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Vuoto (Ushuaia), Martín Pérez / Pcia. Grande">
+          <div class="tag"><span class="cat">Gobernación</span><span>interna</span></div>
+          <h3>El oficialismo peronista se divide de cara a la gobernación 2027</h3>
+          <p>Pérez apuesta el sello "Defendamos Tierra del Fuego" con Gastón Díaz; en paralelo crece la chance de Walter Vuoto dentro del propio espacio.</p>
+          <a class="src" href="https://www.letrap.com.ar/politica/que-se-elige-y-que-se-juega-tierra-del-fuego-las-astillas-del-oficialismo-y-el-reseteo-opositor-n5412753" target="_blank" rel="noopener">LeTrap ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Vuoto (Ushuaia)">
+          <div class="tag"><span class="cat">Interna</span><span>marzo</span></div>
+          <h3>Un concejal de Ushuaia propuso a Vuoto como candidato a gobernador</h3>
+          <p>La sugerencia de Nicolás Pelloli alimenta los trascendidos sobre el sucesor de Melella en 2027.</p>
+          <a class="src" href="https://www.infofueguina.com/politica/2026/3/3/walter-vuoto-seria-un-excelente-gobernador-la-propuesta-de-un-concejal-de-ushuaia-86739.html" target="_blank" rel="noopener">Infofueguina ↗</a>
+        </article>
+      </section>
+
+      <section class="ushuaia">
+        <h2><span class="swatch"></span>Ushuaia</h2>
+
+        <article class="story" data-tema="">
+          <div class="tag"><span class="cat">Encuesta</span><span>reciente</span></div>
+          <h3>Una encuesta radial midió a los posibles candidatos a la intendencia de Ushuaia 2027</h3>
+          <p>El sondeo telefónico del ciclo "El Ángel de la Radio" (FM 94.9) ubicó a la concejala Liliana Fadul al frente de las preferencias, seguida por Daiana Freiberger y la legisladora Victoria Vuoto.</p>
+          <a class="src" href="https://ushuaia24.com.ar/contenido/23697/rumbo-al-2027-una-encuesta-radial-midio-al-posible-proximo-intendente-de-ushuaia" target="_blank" rel="noopener">Ushuaia24 ↗</a>
+        </article>
+
+        <article class="story" data-tema="Vuoto (Ushuaia)">
+          <div class="tag"><span class="cat">Intendencia</span><span>reciente</span></div>
+          <h3>Gustavo Ventura, primer dirigente en confirmar candidatura contra Vuoto por la intendencia</h3>
+          <p>El referente del PAR, segundo en las elecciones de 2019, blanqueó su intención de disputarle a Walter Vuoto la intendencia de Ushuaia en 2027 con un espacio de perfil provincialista.</p>
+          <a class="src" href="https://www.letrap.com.ar/politica/tierra-del-fuego-quien-es-gustavo-ventura-el-primer-anotado-disputar-la-intendencia-ushuaia-n5422412" target="_blank" rel="noopener">LeTrap ↗</a>
+        </article>
+
+        <article class="story" data-tema="">
+          <div class="tag"><span class="cat">Intendencia</span><span>20/08</span></div>
+          <h3>Ricardo Furlán confirmó su candidatura a intendente por el partido SUR</h3>
+          <p>Se presenta con la mira puesta en las elecciones provinciales de 2027.</p>
+          <a class="src" href="https://www.surenio.com.ar/ricardo-furlan-sera-candidato-a-intendente-de-ushuaia/" target="_blank" rel="noopener">El Sureño ↗</a>
+        </article>
+
+        <article class="story" data-tema="Gobernación TDF 2027, Vuoto (Ushuaia)">
+          <div class="tag"><span class="cat">Vuoto</span><span>sin definir</span></div>
+          <h3>Vuoto no define si busca la gobernación o una nueva reelección</h3>
+          <p>El intendente, presidente del PJ fueguino, deja correr ambas chances sin confirmar ni negar sus planes institucionales.</p>
+          <a class="src" href="https://www.letrap.com.ar/politica/ushuaia-walter-vuoto-no-define-si-va-la-gobernacion-y-deja-correr-la-chance-buscar-otra-re-re-n5421790" target="_blank" rel="noopener">LeTrap ↗</a>
+        </article>
+      </section>
+
+      <section class="riogrande">
+        <h2><span class="swatch"></span>Río Grande</h2>
+
+        <article class="story" data-tema="Martín Pérez / Pcia. Grande">
+          <div class="tag"><span class="cat">Concejo</span><span>julio</span></div>
+          <h3>Concejales de Provincia Grande coordinan respuesta a la política de tierras del Gobierno nacional</h3>
+          <p>Alejandra Arce y Jonatan Bogado se reunieron en el Concejo Deliberante por la compra de tierras extranjeras y la protección territorial.</p>
+          <a class="src" href="https://www.lalicuadoratdf.com.ar/2026/07/provincia-grande-llamo-a-defender-las-tierras-y-los-activos-estrategicos-de-la-provincia/" target="_blank" rel="noopener">La Licuadora TDF ↗</a>
+        </article>
+
+        <article class="story" data-tema="Kicillof">
+          <div class="tag"><span class="cat">Peronismo</span><span>agosto</span></div>
+          <h3>Peronismo de la Soberanía impulsa desde Río Grande la candidatura de Kicillof</h3>
+          <p>El sector realizó una asamblea en la ciudad para promover a Axel Kicillof rumbo a las elecciones nacionales.</p>
+          <a class="src" href="https://www.radiouniversidad.com.ar/el-peronismo-de-la-soberania-impulsa-desde-rio-grande-la-candidatura-presidencial-de-axel-kicillof/" target="_blank" rel="noopener">Radio Universidad ↗</a>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <span>Fuentes: El Sureño, Diario del Fin del Mundo, Infofueguina, La Licuadora TDF, Radio Universidad, LeTrap, Infobae, Página/12, Diario Panorama, Prensa Mercosur, Minuto Uno, La Nación, Perfil, Ushuaia Noticias, El Eco, Análisis Digital, Parlamentario, A24, Ushuaia24.</span>
+  </footer>
+</div>
+<script>
+  (function () {
+    var UTC_HOURS = [12, 16, 18, 21];
+    var el = document.getElementById('countdown');
+    if (!el) return;
+    function nextRun() {
+      var now = new Date();
+      var y = now.getUTCFullYear(), m = now.getUTCMonth(), d = now.getUTCDate();
+      for (var i = 0; i < UTC_HOURS.length; i++) {
+        var candidate = new Date(Date.UTC(y, m, d, UTC_HOURS[i], 0, 0));
+        if (candidate > now) return candidate;
+      }
+      return new Date(Date.UTC(y, m, d + 1, UTC_HOURS[0], 0, 0));
+    }
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      var diff = nextRun() - new Date();
+      if (diff < 0) diff = 0;
+      var hh = Math.floor(diff / 3600000);
+      var mm = Math.floor((diff % 3600000) / 60000);
+      var ss = Math.floor((diff % 60000) / 1000);
+      el.textContent = 'próxima en ' + pad(hh) + ':' + pad(mm) + ':' + pad(ss);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+</body>
+</html>
